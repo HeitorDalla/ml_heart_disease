@@ -81,13 +81,13 @@ plt.figure(figsize=(10, 6))
 plt.scatter(df.loc[df['target'] == 1, 'age'],
             df.loc[df['target'] == 1, 'thalach'],
             c='red')
-# Análise - quanto mais jovens, maior a frequência cardiaca
 
 # Fazer um gráfico de disperção onde o target = 0, ou seja, quando são falsos para a doença
 plt.scatter(df.loc[df['target'] == 0, 'age'],
             df.loc[df['target'] == 0, 'thalach'],
             c='blue')
-# Análise - 
+
+# Análise dos gráficos - quanto mais jovens, maior a frequência cardiaca
 
 # Configurações de personalizações
 plt.title("Disperção da doença em relação à Idade e Frequência Cardíaca Máxima")
@@ -106,3 +106,28 @@ df_sem_outliers = df.drop(indice_outliers, axis=0)
 df['age'].plot(kind='hist')
 plt.show()
 
+# Relações entre cp (dor no peito) e ter doença ou não
+comparation_cp_target = pd.crosstab(df['cp'], df['target'])
+print(comparation_cp_target)
+
+comparation_cp_target.plot(kind='bar',
+                           figsize=(10, 6),
+                           color=['Red', 'Blue'])
+
+# Configurações de Personalização
+plt.title("Frequência dos tipos de dores no peito com a doença")
+plt.xlabel("Tipos de dores no peito")
+plt.ylabel("Quantidade")
+plt.legend(['Sem doença', 'Com doença'])
+plt.show()
+
+# Construindo uma Matriz de Correlação entre as variáveis
+print("Matriz de Correlação")
+fig, ax = plt.subplots(figsize=(15, 10))
+ax = sns.heatmap(df.corr(),
+                 annot=True, # indica que vai mostras o valor numérico dentro do quadrados (não somente as cores)
+                 linewidths=0.5, # controla a largura entre as linhas que separam as células do mapa de calor (para remover, basta colocar)
+                 fmt=".2f", # defini o formato que os números vão aparecer, no caso, com 2 casas decimais
+                 cmap="YlGnBu") # defini a paleta de cores, no caso, yellow, green e blue
+plt.yticks(rotation=45)
+plt.show()
