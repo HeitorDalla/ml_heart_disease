@@ -62,11 +62,47 @@ print(df['sex'].value_counts()) # muito mais masculino do que feminino
 comparation_sex_target = pd.crosstab(df['target'], df['sex'])
 print(comparation_sex_target)
 
-pd.crosstab(df['target'], df['sex']).plot(kind='bar',
-                                          figsize=(10,6),
-                                          color=['Salmon', 'lightblue'])
+comparation_sex_target.plot(kind='bar',
+                            figsize=(10,6),
+                            color=['Salmon', 'lightblue'])
 plt.title('Frequência entre Masculino e Feminino')
 plt.xlabel("0 - Sem doença | 1 - Com doença")
 plt.ylabel("Quantidade")
 plt.legend(['Feminino', 'Masculino'])
 plt.show()
+
+# Comparação entre as variáveis independentes thalach (frequência máxima cardiaca) e age (idade), 
+# e a variável dependente target (tem ou não tem doença)
+
+# Criar outra figura
+plt.figure(figsize=(10, 6))
+
+# Fazer um gráfico de disperção onde o target = 1, ou seja, quando são positivos para a doença
+plt.scatter(df.loc[df['target'] == 1, 'age'],
+            df.loc[df['target'] == 1, 'thalach'],
+            c='red')
+# Análise - quanto mais jovens, maior a frequência cardiaca
+
+# Fazer um gráfico de disperção onde o target = 0, ou seja, quando são falsos para a doença
+plt.scatter(df.loc[df['target'] == 0, 'age'],
+            df.loc[df['target'] == 0, 'thalach'],
+            c='blue')
+# Análise - 
+
+# Configurações de personalizações
+plt.title("Disperção da doença em relação à Idade e Frequência Cardíaca Máxima")
+plt.xlabel("Idade")
+plt.ylabel("Frequência Cardíaca Máxima")
+plt.legend(['1 - Doença', '0 - Não Doença'])
+plt.show()
+
+# Pegar os outliers
+min_thalach = df['thalach'].min()
+outlier = df[df['thalach'] == min_thalach] # pessoa que possui menor frequência cardíaca máxima
+indice_outliers = outlier.index # pegar os indices
+df_sem_outliers = df.drop(indice_outliers, axis=0)
+
+# Vendo a distribuição de Idades para verificar outliers
+df['age'].plot(kind='hist')
+plt.show()
+
