@@ -149,10 +149,37 @@ X_train, X_test, y_train, y_test = train_test_split(X,
 
 # Escolhendo o modelo para utilizar
 models = {
-    'Logistic Regression': LogisticRegression,
-    'Random Forest': RandomForestClassifier,
-    'Gradient Boosting Classifier': GradientBoostingClassifier
+    'Logistic Regression': LogisticRegression(),
+    'Random Forest': RandomForestClassifier(),
+    'Gradient Boosting Classifier': GradientBoostingClassifier()
 }
 
-def fit_and_score(X_train, X_test, y_train, y_test):
-    pass
+# Função que vai retornar um dicionário que vai conter o nome do modelo e seu score
+def fit_and_score(models, X_train, X_test, y_train, y_test):
+    np.random.seed(42)
+
+    # Dicionário para manter os scores dos modelos
+    models_scores = {}
+
+    for name_module, module in models.items():
+        # Treinar o modelo
+        training = module.fit(X_train, y_train)
+
+        # Avaliar e salvar o modelo no dicionário
+        models_scores[name_module] = module.score(X_test, y_test)
+
+    # Retornar o dicionário dos scores dos modelos
+    return models_scores
+
+# Dicionário que vai armazenar o modelo e seu score
+models_score = fit_and_score(models=models,
+                             X_train=X_train,
+                             X_test=X_test,
+                             y_train=y_train,
+                             y_test=y_test)
+
+# Modelos e scores
+print("Modelos e seus scores: ")
+for name, score in models_score.items():
+    print("{} - {}" .format(name, score))
+
