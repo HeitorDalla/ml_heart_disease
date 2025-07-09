@@ -183,3 +183,134 @@ print("Modelos e seus scores: ")
 for name, score in models_score.items():
     print("{} - {}" .format(name, score))
 
+# Comparação dos Modelos
+pd.DataFrame(models_score, index=['accuracy']).T.plot(kind='bar')
+plt.xticks(rotation=45)
+plt.yticks(rotation=45)
+plt.show()
+
+
+# Ajustes de Hiperparâmetros
+
+# RandomizedSearchCV - Pela quantidade de vezes que eu definir, ele vai fazer validação cruzada com os dados
+
+
+# LogisticRegression
+
+# Definindo os Hiperparâmetros modificados
+rs_lr_grid = {"C": np.logspace(-4, 4, 20),
+              "solver": ["liblinear"]}
+
+# Garantia de Reprodutibilidade
+np.random.seed(42)
+
+# Instanciando o modelo
+rs_lr_model = RandomizedSearchCV(LogisticRegression(max_iter=1000),
+                                 param_distributions=rs_lr_grid,
+                                 n_iter=10,
+                                 cv=5,
+                                 verbose=2)
+
+# Treinamento do Modelo
+rs_lr_training = rs_lr_model.fit(X_train, y_train)
+
+# Pegar os melhores Hiperparâmetros
+rs_lr_params = rs_lr_model.best_params_
+print("Os melhores hiperparâmetros do modelo Logistic Regression potencializado pelo Randomized Search são: ")
+print(rs_lr_params)
+
+# Avaliação do Modelo
+rs_lr_score = rs_lr_model.score(X_test, y_test)
+print("A avaliação do modelo Logistic Regression treinado pelo Randomized Search é: {}" .format(rs_lr_score))
+
+
+# RandomForestClassifier
+rs_rf_grid = {
+    "max_depth": [None, 5, 10, 20, 30],
+    "max_features": ['sqrt', 'log2'],
+    "min_samples_leaf": [1, 2, 4],
+    "min_samples_split": [2, 4, 6],
+    "n_estimators": [10, 100, 200, 500]
+}
+
+# Garantia de Reprodutibilidade
+np.random.seed(42)
+
+# Instancia do Modelo
+rs_rf_model = RandomizedSearchCV(RandomForestClassifier(),
+                                 param_distributions=rs_rf_grid,
+                                 n_iter=10,
+                                 cv=5,
+                                 verbose=2)
+
+# Treinar o modelo
+rs_rf_training = rs_rf_model.fit(X_train, y_train)
+
+# Pegar os melhores Hiperparâmetros
+rs_rf_params = rs_rf_model.best_params_
+print("Os melhores hiperparâmetros do modelo Random Forest Classifier potencializado pelo Randomized Search são: ")
+print(rs_rf_params) # {'n_estimators': 200, 'min_samples_split': 4, 'min_samples_leaf': 4, 'max_features': 'sqrt', 'max_depth': None}
+
+# Avaliação do Modelo
+rs_rf_score = rs_rf_model.score(X_test, y_test)
+print("A avaliação do modelo Random Forest Classifier treinado pelo Randomized Search é: {}" .format(rs_rf_score))
+
+
+# GridSearchCV - Com os Hiperparâmetros que eu passar, ele vai fazer todas as opções que tem com validação cruzada
+
+
+# LogisticRegression
+
+# Inicializar os Hiperparâmetros a mudar
+gs_lr_grid = {"C": np.logspace(-4, 4, 30),
+              "solver": ["liblinear"]}
+
+# Garantia de Reprodutibilidade
+np.random.seed(42)
+
+# Inicializar o modelo
+gs_lr_model = GridSearchCV(LogisticRegression(max_iter=1000),
+                           param_grid=gs_lr_grid,
+                           cv=5,
+                           verbose=2)
+
+# Treinamento do Modelo
+gs_lr_training = gs_lr_model.fit(X_train, y_train)
+
+# Pegar os melhores Hiperparâmetros do treinamento
+gs_lr_params = gs_lr_model.best_params_
+print("Os melhores hiperparâmetros do modelo Logistic Regression potencializado pelo Grid Search são: ")
+print(gs_lr_params)
+
+# Avaliação do Modelo
+gs_lr_score = gs_lr_model.score(X_test, y_test)
+print("A avaliação do modelo Logistic Regression treinado pelo Grid Search é: {}" .format(gs_lr_score))
+
+
+# RandomForestClassifier
+gs_rf_grid = {'n_estimators': [100, 200, 500],
+              'min_samples_split': [4],
+              'min_samples_leaf': [4],
+              'max_features': ['sqrt'],
+              'max_depth': [None]}
+
+# Garantia de Reprodutibilidade
+np.random.seed(42)
+
+# Instanciando o Modelo
+gs_rf_model = GridSearchCV(RandomForestClassifier(),
+                           param_grid=gs_rf_grid,
+                           cv=5,
+                           verbose=2)
+
+# Treinamento do Modeo
+gs_rf_training = gs_rf_model.fit(X_train, y_train)
+
+# Melhores Hiperparâmetros
+gs_rf_params = gs_rf_model.best_params_
+print("Os melhores hiperparâmetros do modelo Random Forest Classifier potencializado pelo Grid Search são: ")
+print(gs_rf_params)
+
+# Avaliando o Modelo treinado
+gs_rf_score = gs_rf_model.score(X_test, y_test)
+print("A avaliação do modelo Random Forest Classifier treinado pelo Grid Search é: {}" .format(gs_rf_score))
