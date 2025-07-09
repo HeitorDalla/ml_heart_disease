@@ -6,7 +6,9 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 
 # Modelo de algorítmos
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression # muito utilizado quando tem fortes relações lineares entre as variáveis
+from sklearn.ensemble import RandomForestClassifier # muito utilizado quando tem relações lineares e não lineares
+from sklearn.ensemble import GradientBoostingClassifier # muito utilizado quando tem fortes relações não lineares entre as variáveis
 
 # Avaliação do modelo
 from sklearn.model_selection import cross_val_score
@@ -131,3 +133,26 @@ ax = sns.heatmap(df.corr(),
                  cmap="YlGnBu") # defini a paleta de cores, no caso, yellow, green e blue
 plt.yticks(rotation=45)
 plt.show()
+
+# Dividindo os dados em variáveis dependentes e independentes
+X = df_sem_outliers.drop(columns='target', axis=1)
+y = df_sem_outliers['target']
+
+print(X)
+print(y)
+
+# Separação dos dados em treinamento e teste
+X_train, X_test, y_train, y_test = train_test_split(X,
+                                                    y,
+                                                    test_size=0.2,
+                                                    random_state=42)
+
+# Escolhendo o modelo para utilizar
+models = {
+    'Logistic Regression': LogisticRegression,
+    'Random Forest': RandomForestClassifier,
+    'Gradient Boosting Classifier': GradientBoostingClassifier
+}
+
+def fit_and_score(X_train, X_test, y_train, y_test):
+    pass
