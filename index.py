@@ -43,7 +43,8 @@ print(df.head())
 # Ver a quantidade de cada valor na coluna alvo
 print(df['target'].value_counts())
 
-df['target'].value_counts().plot(kind="bar", color=["salmon", "lightblue"])
+df['target'].value_counts().plot(kind="bar",
+                                 color=["salmon", "lightblue"])
 plt.show()
 
 # Vendo demais informações sobre o dataset
@@ -60,3 +61,12 @@ print(df['sex'].value_counts()) # muito mais masculino do que feminino
 
 comparation_sex_target = pd.crosstab(df['target'], df['sex'])
 print(comparation_sex_target)
+
+pd.crosstab(df['target'], df['sex']).plot(kind='bar',
+                                          figsize=(10,6),
+                                          color=['Salmon', 'lightblue'])
+plt.title('Frequência entre Masculino e Feminino')
+plt.xlabel("0 - Sem doença | 1 - Com doença")
+plt.ylabel("Quantidade")
+plt.legend(['Feminino', 'Masculino'])
+plt.show()
