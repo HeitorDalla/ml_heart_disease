@@ -183,6 +183,10 @@ print("Modelos e seus scores: ")
 for name, score in models_score.items():
     print("{} - {}" .format(name, score))
 
+# Logistic Regression - 0.8852459016393442
+# Random Forest - 0.8688524590163934
+# Gradient Boosting Classifier - 0.7540983606557377
+
 # Comparação dos Modelos
 pd.DataFrame(models_score, index=['accuracy']).T.plot(kind='bar')
 plt.xticks(rotation=45)
@@ -207,7 +211,7 @@ np.random.seed(42)
 # Instanciando o modelo
 rs_lr_model = RandomizedSearchCV(LogisticRegression(max_iter=1000),
                                  param_distributions=rs_lr_grid,
-                                 n_iter=10,
+                                 n_iter=20,
                                  cv=5,
                                  verbose=2)
 
@@ -223,6 +227,7 @@ print(rs_lr_params)
 rs_lr_score = rs_lr_model.score(X_test, y_test)
 print("A avaliação do modelo Logistic Regression treinado pelo Randomized Search é: {}" .format(rs_lr_score))
 
+# 0.868852459016393
 
 # RandomForestClassifier
 rs_rf_grid = {
@@ -239,7 +244,7 @@ np.random.seed(42)
 # Instancia do Modelo
 rs_rf_model = RandomizedSearchCV(RandomForestClassifier(),
                                  param_distributions=rs_rf_grid,
-                                 n_iter=10,
+                                 n_iter=20,
                                  cv=5,
                                  verbose=2)
 
@@ -249,12 +254,13 @@ rs_rf_training = rs_rf_model.fit(X_train, y_train)
 # Pegar os melhores Hiperparâmetros
 rs_rf_params = rs_rf_model.best_params_
 print("Os melhores hiperparâmetros do modelo Random Forest Classifier potencializado pelo Randomized Search são: ")
-print(rs_rf_params) # {'n_estimators': 200, 'min_samples_split': 4, 'min_samples_leaf': 4, 'max_features': 'sqrt', 'max_depth': None}
+print(rs_rf_params) # {'n_estimators': 10, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'log2', 'max_depth': 5}
 
 # Avaliação do Modelo
 rs_rf_score = rs_rf_model.score(X_test, y_test)
 print("A avaliação do modelo Random Forest Classifier treinado pelo Randomized Search é: {}" .format(rs_rf_score))
 
+# 0.8688524590163934
 
 # GridSearchCV - Com os Hiperparâmetros que eu passar, ele vai fazer todas as opções que tem com validação cruzada
 
@@ -286,6 +292,7 @@ print(gs_lr_params)
 gs_lr_score = gs_lr_model.score(X_test, y_test)
 print("A avaliação do modelo Logistic Regression treinado pelo Grid Search é: {}" .format(gs_lr_score))
 
+# 0.8524590163934426
 
 # RandomForestClassifier
 gs_rf_grid = {'n_estimators': [100, 200, 500],
@@ -314,3 +321,5 @@ print(gs_rf_params)
 # Avaliando o Modelo treinado
 gs_rf_score = gs_rf_model.score(X_test, y_test)
 print("A avaliação do modelo Random Forest Classifier treinado pelo Grid Search é: {}" .format(gs_rf_score))
+
+# 0.8524590163934426
