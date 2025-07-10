@@ -21,6 +21,10 @@ from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 # Salvar um modelo
 import pickle
 
+# Pipeline para o LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
 
 # Tratamento dos Dados
 
@@ -138,9 +142,6 @@ plt.show()
 X = df_sem_outliers.drop(columns='target', axis=1)
 y = df_sem_outliers['target']
 
-print(X)
-print(y)
-
 # Separação dos dados em treinamento e teste
 X_train, X_test, y_train, y_test = train_test_split(X,
                                                     y,
@@ -149,7 +150,7 @@ X_train, X_test, y_train, y_test = train_test_split(X,
 
 # Escolhendo o modelo para utilizar
 models = {
-    'Logistic Regression': LogisticRegression(),
+    'Logistic Regression': make_pipeline(StandardScaler(), LogisticRegression(max_iter=500)),
     'Random Forest': RandomForestClassifier(),
     'Gradient Boosting Classifier': GradientBoostingClassifier()
 }
@@ -208,8 +209,8 @@ rs_lr_grid = {"C": np.logspace(-4, 4, 20),
 # Garantia de Reprodutibilidade
 np.random.seed(42)
 
-# Instanciando o modelo
-rs_lr_model = RandomizedSearchCV(LogisticRegression(max_iter=1000),
+# Instanciando o modelo (objeto de busca por hiperparâmetros)
+rs_lr_model = RandomizedSearchCV(LogisticRegression(max_iter=10000),
                                  param_distributions=rs_lr_grid,
                                  n_iter=20,
                                  cv=5,
@@ -218,16 +219,35 @@ rs_lr_model = RandomizedSearchCV(LogisticRegression(max_iter=1000),
 # Treinamento do Modelo
 rs_lr_training = rs_lr_model.fit(X_train, y_train)
 
-# Pegar os melhores Hiperparâmetros
+# Calcula as 20 combinações aleatórias dos hiperparâmetros, 
+# para cada combinação, realiza a validação cruzada com 5 fols, 
+# onde cada fold usa 80% para treino e 20% para testes (diferente para cada rodada), e para finalizar,
+# calcula a acurácia média de cada combinação dos 5 folds
+# Escolhe o melhor modelo (com maior acurácia média)
+# Conteste o modelo final com os melhores hiperparâmetros usando todo o X_train
+# O modelo final esta pronto.
+
+# Ja treinado, agora o 'rs_lr_model' (modelo) possui o melhor resultado
 rs_lr_params = rs_lr_model.best_params_
 print("Os melhores hiperparâmetros do modelo Logistic Regression potencializado pelo Randomized Search são: ")
 print(rs_lr_params)
 
-# Avaliação do Modelo
-rs_lr_score = rs_lr_model.score(X_test, y_test)
-print("A avaliação do modelo Logistic Regression treinado pelo Randomized Search é: {}" .format(rs_lr_score))
+# Pega o melhor modelo final treinado com os melhor hiperparâmetros usando todo o X_train e y_train
+rs_lr_estimator = rs_lr_model.best_estimator_
+print("O melhor modelo final do Logistic Regression potencializado pelo Randomized Search são: ")
+print(rs_lr_estimator)
 
+# É a acurácia média dos 5 volds (da melhor combinação) do best_estimator (melhor modelo, treinado com os melhores parâmetros (best_params_))
+rs_lr_score = rs_lr_model.best_score_
+print("A acurácia média do melhor modelo Logistic Regression potencializado pelo Randomized Search são: ")
+print(rs_lr_score)
+# 0.8176020408163265
+
+# Avaliação do Modelo - Avalia o best_estimator em dados que ele nunca viu (X_test, y_test)
+rs_lr_accuracy = rs_lr_model.score(X_test, y_test)
+print("A avaliação do modelo Logistic Regression treinado pelo Randomized Search é: {}" .format(rs_lr_accuracy))
 # 0.868852459016393
+
 
 # RandomForestClassifier
 rs_rf_grid = {
@@ -259,8 +279,8 @@ print(rs_rf_params) # {'n_estimators': 10, 'min_samples_split': 4, 'min_samples_
 # Avaliação do Modelo
 rs_rf_score = rs_rf_model.score(X_test, y_test)
 print("A avaliação do modelo Random Forest Classifier treinado pelo Randomized Search é: {}" .format(rs_rf_score))
-
 # 0.8688524590163934
+
 
 # GridSearchCV - Com os Hiperparâmetros que eu passar, ele vai fazer todas as opções que tem com validação cruzada
 
@@ -275,7 +295,7 @@ gs_lr_grid = {"C": np.logspace(-4, 4, 30),
 np.random.seed(42)
 
 # Inicializar o modelo
-gs_lr_model = GridSearchCV(LogisticRegression(max_iter=1000),
+gs_lr_model = GridSearchCV(LogisticRegression(max_iter=10000),
                            param_grid=gs_lr_grid,
                            cv=5,
                            verbose=2)
@@ -291,8 +311,8 @@ print(gs_lr_params)
 # Avaliação do Modelo
 gs_lr_score = gs_lr_model.score(X_test, y_test)
 print("A avaliação do modelo Logistic Regression treinado pelo Grid Search é: {}" .format(gs_lr_score))
-
 # 0.8524590163934426
+
 
 # RandomForestClassifier
 gs_rf_grid = {'n_estimators': [100, 200, 500],
@@ -321,5 +341,7 @@ print(gs_rf_params)
 # Avaliando o Modelo treinado
 gs_rf_score = gs_rf_model.score(X_test, y_test)
 print("A avaliação do modelo Random Forest Classifier treinado pelo Grid Search é: {}" .format(gs_rf_score))
-
 # 0.8524590163934426
+
+
+# ESTUDAR SOBRE: BEST_PARAMS, BEST_ESTIMATOR, BEST_SCORE
