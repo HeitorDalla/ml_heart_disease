@@ -12,7 +12,6 @@ from sklearn.ensemble import GradientBoostingClassifier # muito utilizado quando
 
 # Avaliação do modelo
 from sklearn.model_selection import cross_val_score
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score
 
 # Melhorar os hiperparâmetros
@@ -29,7 +28,6 @@ from sklearn.pipeline import make_pipeline
 # Tratamento dos Dados
 
 # Dicionário de Dados
-
 
 # Que pergunta(s) você está tentando resolver?
 # Que tipo de dados temos e como tratamos os diferentes tipos?
@@ -344,4 +342,69 @@ print("A avaliação do modelo Random Forest Classifier treinado pelo Grid Searc
 # 0.8524590163934426
 
 
-# ESTUDAR SOBRE: BEST_PARAMS, BEST_ESTIMATOR, BEST_SCORE
+# Escolhendo o melhor modelo até agora e fazendo previsões
+best_params_model = rs_rf_model.best_params_ # {'n_estimators': 10, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'log2', 'max_depth': 5}
+
+# Originando um novo modelo com os melhor parâmetros
+clf = RandomForestClassifier(n_estimators = 10, 
+                             min_samples_split = 4, 
+                             min_samples_leaf = 2, 
+                             max_features = 'log2', 
+                             max_depth = 5)
+
+y_preds = rs_rf_model.predict(X_test)
+
+# Cross-val-score
+
+# Accuracy - Tem comm função ver a acurácia do modelo
+cv_accuracy = cross_val_score(clf,
+                              X,
+                              y,
+                              cv=5,
+                              scoring='accuracy')
+cv_accuracy_mean = np.mean(cv_accuracy)
+
+print("A acurácia do melhor modelo é: {}" .format(cv_accuracy_mean))
+
+# Precision - Tem como função ver a precisão do modelo
+cv_precision = cross_val_score(clf,
+                              X,
+                              y,
+                              cv=5,
+                              scoring='precision')
+cv_precision_mean = np.mean(cv_precision)
+
+print("A precisão do melhor modelo é: {}" .format(cv_precision_mean))
+
+# Recall - 
+cv_recall = cross_val_score(clf,
+                            X,
+                            y,
+                            cv=5,
+                            scoring='recall')
+cv_recall_mean = np.mean(cv_recall)
+
+print("O recall do melhor modelo é: {}" .format(cv_recall_mean))
+
+# F1 - 
+cv_f1 = cross_val_score(clf,
+                        X,
+                        y,
+                        cv=5,
+                        scoring='f1')
+cv_f1_mean = np.mean(cv_f1)
+
+print("O f1-score do melhor modelo é: {}" .format(cv_f1_mean))
+
+# Comparação das avaliações do Cross-val-score
+cv_metrics = pd.DataFrame({
+    'Accuracy': cv_accuracy_mean,
+    'Precision': cv_precision_mean,
+    'Recall': cv_recall_mean,
+    'F1': cv_f1_mean
+}, index=[0])
+
+cv_metrics.T.plot.bar(title="Classificação das métricas da Validação Cruzada",
+                      legend=False)
+plt.xticks(rotation=50)
+plt.show()
