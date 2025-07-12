@@ -436,3 +436,8 @@ cv_metrics.T.plot.bar(title="Classificação das métricas da Validação Cruzad
                       legend=False)
 plt.xticks(rotation=50)
 plt.show()
+
+
+# Salvar o Modelo
+with open('models/best_model_rf.pkl', 'wb') as f:
+    pickle.dump(best_estimator_model, f)
