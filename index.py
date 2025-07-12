@@ -12,7 +12,7 @@ from sklearn.ensemble import GradientBoostingClassifier # muito utilizado quando
 
 # Avaliação do modelo
 from sklearn.model_selection import cross_val_score
-from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, classification_report, RocCurveDisplay
 
 # Melhorar os hiperparâmetros
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
@@ -345,6 +345,8 @@ print("A avaliação do modelo Random Forest Classifier treinado pelo Grid Searc
 # Escolhendo o melhor modelo até agora e fazendo previsões
 best_params_model = rs_rf_model.best_params_ # {'n_estimators': 10, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'log2', 'max_depth': 5}
 
+best_estimator_model = rs_rf_model.best_estimator_ # melhor modelo já treinado
+
 # Originando um novo modelo com os melhor parâmetros
 clf = RandomForestClassifier(n_estimators = 10, 
                              min_samples_split = 4, 
@@ -353,6 +355,32 @@ clf = RandomForestClassifier(n_estimators = 10,
                              max_depth = 5)
 
 y_preds = rs_rf_model.predict(X_test)
+
+
+# Confusion Matrix - 
+print(confusion_matrix(y_test, y_preds))
+
+# Gráfico
+sns.set_theme(font_scale=1.5)
+
+fig, ax = plt.subplots(figsize=(3, 3))
+ax = sns.heatmap(confusion_matrix(y_test, y_preds),
+                 annot=True,
+                 cbar=False)
+plt.xlabel("Verdadeiros rótulos")
+plt.ylabel("Previsão dos rótulos")
+plt.show()
+
+
+# Roc_curve and Roc_auc_score
+RocCurveDisplay.from_estimator(best_estimator_model, X_test, y_test)
+plt.title("Curva ROC - Melhor Modelo Random Forest")
+plt.show()
+
+
+# Classification report - 
+print(classification_report(y_test, y_preds))
+
 
 # Cross-val-score
 
