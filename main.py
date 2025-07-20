@@ -14,6 +14,9 @@ from sklearn.ensemble import GradientBoostingClassifier # muito utilizado quando
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, classification_report, RocCurveDisplay
 
+# Importancia das Features
+from sklearn.inspection import permutation_importance
+
 # Melhorar os hiperparâmetros
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 
@@ -191,6 +194,27 @@ pd.DataFrame(models_score, index=['accuracy']).T.plot(kind='bar')
 plt.xticks(rotation=45)
 plt.yticks(rotation=45)
 plt.show()
+
+# Analisando a Importância das Features
+# Permutation Importance - Mede a importância de cada feature para o modelo
+result = permutation_importance(models['Random Forest'],
+                                X_test,
+                                y_test,
+                                n_repeats=10,
+                                random_state=42)
+
+importances = result.importances_mean
+std = result.importances_std
+features = X.columns
+
+plt.barh(features, importances, xerr=std)
+plt.xlabel("Importância por Permutação")
+plt.title("Importância das Features")
+plt.show()
+# Com base nesse gráfica, podemos ver as features mais importantes para o modelo.
+# O que tiramos disso?
+# Com esse resultado, podemos canalizar nossos esforços para buscar mais informacões sobre as features
+# mais importantes a frequência cardíaca máxima (thalach) e dor no peito (cp).
 
 
 # Ajustes de Hiperparâmetros
@@ -436,6 +460,28 @@ cv_metrics.T.plot.bar(title="Classificação das métricas da Validação Cruzad
                       legend=False)
 plt.xticks(rotation=50)
 plt.show()
+
+
+# Analisando a Importância das Features do melhor modelo treinado
+result = permutation_importance(best_estimator_model,
+                                X_test,
+                                y_test,
+                                n_repeats=10,
+                                random_state=42)
+
+importances = result.importances_mean
+std = result.importances_std
+features = X.columns
+
+plt.barh(features, importances, xerr=std)
+plt.xlabel("Importância por Permutação")
+plt.title("Importância das Features")
+plt.show()
+
+# Verificando a importância das features do melhor modelo treinado
+print(pd.crosstab(df_sem_outliers['cp'], df_sem_outliers['target']))
+
+print(pd.crosstab(df_sem_outliers['fbs'], df_sem_outliers['target']))
 
 
 # Salvar o Modelo
