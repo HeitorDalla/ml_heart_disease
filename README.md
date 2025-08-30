@@ -124,5 +124,5 @@ Caso encontre bugs ou tenha sugestões de melhorias, **abra uma issue** ou envie
 
 ---
 
-📌 **Autor:** Heitor Giussani Dalla Villa
-📧 **Contato:** heitorvillavilla@email.com  
+- 📌 **Autor:** Heitor Giussani Dalla Villa
+- 📧 **Contato:** heitorvillavilla@email.com  
